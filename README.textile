@@ -17,7 +17,6 @@ The @marrow.tags@ package offers pure-Python HTML (and other) text generation an
 * No additional languages to learn: it's all Python.
 ** You benefit from Python's opcode generation and caching systems.
 ** Compatible with all Python interpreters: CPython, Jython, etc.
-** If you use an accelerator such as Psyco, your templates benefit, too.
 * Usable as a templating engine:
 ** Extremely light-weight.
 ** Utilizes Python's existing package management infrastructure.
