@@ -1,5 +1,7 @@
+import sys
 from timeit import Timer
 from marrow.tags.html5 import *
+
 
 page = html [
         head [ title [ 'Welcome!' ] ],
@@ -27,6 +29,7 @@ duration = Timer("[i for i in page.render('ascii')]", "from __main__ import page
 timeper = duration / float(n) * 1000
 genper = float(n) / duration
 
+print "Please wait..."
 print "Timeit (Stream): %0.2fs for %d gens: %0.2f usec/gen (%d gen/sec)." % (duration, n, timeper, genper)
 
 duration = Timer("unicode(page)", "from __main__ import page").timeit(n)
