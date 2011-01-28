@@ -1,6 +1,10 @@
 # encoding: utf-8
 
 # TODO: This is just an idea at the moment.
+# See:
+#  http://code.activestate.com/recipes/276960/
+#  http://code.activestate.com/recipes/576756/
+#  http://code.activestate.com/recipes/576757/
 
 __all__ = ['Filter']
 
