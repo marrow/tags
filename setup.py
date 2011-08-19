@@ -1,35 +1,16 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-import sys, os
-
-try:
-    from distribute_setup import use_setuptools
-    use_setuptools()
-
-except ImportError:
-    pass
+import os
+import sys
 
 from setuptools import setup, find_packages
 
 
-if sys.version_info <= (2, 6):
+if sys.version_info < (2, 6):
     raise SystemExit("Python 2.6 or later is required.")
 
-if sys.version_info >= (3,0):
-    def execfile(filename, globals_=None, locals_=None):
-        if globals_ is None:
-            globals_ = globals()
-        
-        if locals_ is None:
-            locals_ = globals_
-        
-        exec(compile(open(filename).read(), filename, 'exec'), globals_, locals_)
-
-else:
-    from __builtin__ import execfile
-
-execfile(os.path.join("marrow", "tags", "release.py"))
+exec(open(os.path.join("marrow", "tags", "release.py")))
 
 
 
@@ -38,14 +19,20 @@ setup(
         version = version,
         
         description = "An object-based template and widget library wherein templates are interpreted by Python itself.",
+        long_description = """\
+For full documentation, see the README.textile file present in the package,
+or view it online on the GitHub project page:
+
+https://github.com/marrow/marrow.tags""",
+        
         author = "Alice Bevan-McGregor",
         author_email = "alice+marrow@gothcandy.com",
-        url = "",
-        download_url = "",
+        url = "https://github.com/marrow/marrow.tags",
         license = "MIT",
-        keywords = '',
         
-        install_requires = ['marrow.util'],
+        install_requires = [
+            'marrow.util < 2.0'
+        ],
         
         test_suite = 'nose.collector',
         tests_require = ['nose', 'coverage'],
@@ -61,13 +48,10 @@ setup(
                 "Topic :: Software Development :: Libraries :: Python Modules"
             ],
         
-        packages = find_packages(exclude=['examples', 'tests', 'tests.*', 'docs', 'third-party']),
-        include_package_data = True,
-        package_data = {
-                '': ['README.textile', 'LICENSE', 'distribute_setup.py'],
-                'docs': ['Makefile', 'source/*']
-            },
+        packages = find_packages(exclude=['examples', 'tests']),
         zip_safe = True,
+        include_package_data = True,
+        package_data = {'': ['README.textile', 'LICENSE']},
         
-        namespace_packages = ['marrow']
+        namespace_packages = ['marrow'],
     )
