@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+import inspect
+
 from copy import deepcopy
 from sys import getcheckinterval, setcheckinterval
 
@@ -181,6 +183,17 @@ class Tag(Fragment):
         yield 'enter', self
         
         for child in self.children:
+            if inspect.isgenerator(child):
+                for element in child:
+                    if isinstance(element, basestring):
+                        yield 'text', unicode(element)
+                        continue
+                    
+                    for chunk in element:
+                        yield chunk
+                    
+                continue
+            
             if isinstance(child, Fragment):
                 for element in child:
                     yield element
