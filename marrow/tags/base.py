@@ -152,7 +152,7 @@ class Tag(Fragment):
                 for element in t.exit():
                     buf.write(element.encode(encoding))
                 
-                if not t.simple or t.children: buf.write('\n')
+                if indent and (not t.simple or t.children): buf.write('\n')
                 text = False
                 continue
             
