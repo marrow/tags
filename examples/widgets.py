@@ -1,12 +1,16 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
+from timeit import Timer
+
 from marrow.tags import html5 as tag
 
 from marrow.widgets import *
 
 
 
-def main():
+if __name__ == '__main__':
     search = Form('site-search', action='/search', method='get', children=[
             SearchField('q', autofocus=True, autocomplete="on", placeholder="Site-wide search.")
         ])
@@ -53,33 +57,57 @@ def main():
                     tag.meta ( charset = "utf-8" ),
                     tag.title [ "Example Widgets" ]
                 ],
-        
+            
+            "\n",
+            
             tag.body [
                     tag.h1 [ "Example Widgets" ],
+                    "\n\n",
                 
                     tag.h2 [ "Search" ],
+                    "\n",
                     search(),
+                    "\n\n",
                 
                     tag.h2 [ "Login" ],
+                    "\n",
                     login(),
+                    "\n\n",
                 
                     tag.h2 [ "Contact" ],
+                    "\n",
                     contact(),
+                    "\n\n",
                 
                     tag.h2 [ "Select Fields" ],
+                    "\n\n",
                 
                     tag.h3 [ "Raw Select" ],
+                    "\n",
                     select(),
+                    "\n\n",
                 
                     tag.h3 [ "Raw Select w/ Data" ],
+                    "\n",
                     select({'myselect': 'home'}),
+                    "\n\n",
                 
                     tag.h3 [ "Raw Select, Large" ],
-                    select2()
+                    "\n",
+                    select2(),
+                    "\n",
                 ]
         ]
-
+    
     print unicode(page)
-
-if __name__ == '__main__':
-    main()
+    
+    n = 1000
+    duration = Timer("list(page.render())", "from __main__ import page").timeit(n)
+    timeper = duration / float(n) * 1000
+    genper = float(n) / duration
+    print "Timeit (Widget Stream): %0.2fs for %d gens: %0.2f usec/gen (%d gen/sec)." % (duration, n, timeper, genper)
+    
+    duration = Timer("unicode(page)", "from __main__ import page").timeit(n)
+    timeper = duration / float(n) * 1000
+    genper = float(n) / duration
+    print "Timeit (Widget Monolithic): %0.2fs for %d gens: %0.2f usec/gen (%d gen/sec)." % (duration, n, timeper, genper)
