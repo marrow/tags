@@ -3,11 +3,11 @@
 import inspect
 
 from copy import deepcopy
-from sys import getcheckinterval, setcheckinterval
+from cgi import escape
 
 from marrow.util.compat import IO
 from marrow.util.object import NoDefault
-from marrow.tags.util import quoteattrs, escape
+from marrow.tags.util import quoteattrs
 
 
 __all__ = ['Fragment', 'Tag', 'Text', 'AutoTag', 'tag']
@@ -36,7 +36,7 @@ class Text(Fragment):
         self.escape = escape
     
     def __iter__(self):
-        yield escape(unicode(self.data)) if self.escape else unicode(self.data)
+        yield escape(self.data) if self.escape else self.data
 
 
 class Flush(Fragment):
@@ -45,18 +45,14 @@ class Flush(Fragment):
 
 
 class Tag(Fragment):
-    prefix = None
-    simple = False
-    strip = False
-    
-    def __init__(self, name=NoDefault, prefix=NoDefault, simple=NoDefault, strip=NoDefault, *args, **kw):
+    def __init__(self, name, prefix=None, simple=False, strip=False, *args, **kw):
         super(Tag, self).__init__([], *args, **kw)
         
-        self.name = self.__class__.__name__ if name is NoDefault else name
+        self.name = name
         
-        if prefix is not NoDefault: self.prefix = prefix
-        if simple is not NoDefault: self.simple = simple
-        if strip is not NoDefault: self.strip = strip
+        self.prefix = prefix
+        self.simple = simple
+        self.strip = strip
     
     def __call__(self, strip=NoDefault, *args, **kw):
         self = deepcopy(self)
@@ -73,13 +69,13 @@ class Tag(Fragment):
         self = deepcopy(self)
         
         if not isinstance(k, (tuple, list)):
-            k = [k]
+            k = (k, )
         
         for fragment in k:
             if isinstance(fragment, basestring):
                 self.data.append(escape(fragment))
                 continue
-        
+            
             self.data.append(fragment)
         
         return self
@@ -111,15 +107,13 @@ class Tag(Fragment):
         return Tag(self.name, self.prefix, self.simple, self.strip, *self.args, **self.attrs)
     
     def __iter__(self):
-        if self.strip:
-            raise StopIteration()
+        if not self.strip:
+            if self.prefix:
+                yield self.prefix
             
-        if self.prefix:
-            yield self.prefix
+            yield u'<' + self.name + u''.join([attr for attr in quoteattrs(self, self.attrs)]) + u'>'
         
-        yield u'<' + self.name + u''.join([attr for attr in quoteattrs(self, self.attrs)]) + u'>'
-        
-        if self.simple or self.strip:
+        if self.simple:
             raise StopIteration()
         
         for child in self.data:
@@ -154,7 +148,8 @@ class Tag(Fragment):
             
             yield child
         
-        yield u'</' + self.name + u'>'
+        if not self.strip:
+            yield u'</' + self.name + u'>'
     
     def clear(self):
         self.data = []

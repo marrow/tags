@@ -101,7 +101,7 @@ if __name__ == '__main__':
     
     print unicode(page)
     
-    n = 1000
+    n = 5000
     duration = Timer("list(page.render())", "from __main__ import page").timeit(n)
     timeper = duration / float(n) * 1000
     genper = float(n) / duration

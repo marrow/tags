@@ -22,14 +22,9 @@ _events = {'onabort', 'onblur', 'oncanplay', 'oncanplaythrough', 'onchange', 'on
 flush = Flush()
 
 
-class comment(Tag):
-    def enter(self):
-        yield _comment[0]
-
-    def exit(self):
-        yield _comment[1]
-
-comment = comment()
+class comment(Text):
+    def __iter__(self):
+        yield _comment[0] + self.data + _comment[1]
 
 
 html = Tag('html', prefix=_doctype)
