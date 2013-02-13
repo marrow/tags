@@ -42,7 +42,7 @@ _protected = ('del', )
 for t in _tags:
     if t not in _locals:
         _locals[t if t not in _protected else (t + '_')] = Tag(t, simple=t in _partial, indent=not t in _nowrap)
-        __all__.append(t)
+        __all__.append(t if t not in _protected else (t + '_'))
 
 for f in filters.__all__:
     _locals[f] = getattr(filters, f)
