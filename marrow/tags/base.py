@@ -15,10 +15,10 @@ __all__ = ['Fragment', 'Tag', 'Text', 'AutoTag', 'tag']
 
 
 class Fragment(object):
-    def __init__(self, data_=None, *args, **kw):
+    def __init__(self, data=None, *args, **kw):
         self.args = list(args)
         self.attrs = kw
-        self.data = data_
+        self.data = data
         
         super(Fragment, self).__init__()
     
@@ -30,30 +30,37 @@ class Fragment(object):
         self.attrs = dict()
 
 
+class Text(Fragment):
+    def __init__(self, data, escape=True, *args, **kw):
+        super(Text, self).__init__(data, *args, **kw)
+        self.escape = escape
+    
+    def __iter__(self):
+        yield escape(unicode(self.data)) if self.escape else unicode(self.data)
+
+
+class Flush(Fragment):
+    def __iter__(self):
+        yield ''
+
+
 class Tag(Fragment):
     prefix = None
     simple = False
     strip = False
-    indent = True
     
-    def __init__(self, name=NoDefault, prefix=NoDefault, simple=NoDefault, strip=NoDefault, indent=NoDefault, *args, **kw):
+    def __init__(self, name=NoDefault, prefix=NoDefault, simple=NoDefault, strip=NoDefault, *args, **kw):
+        super(Tag, self).__init__([], *args, **kw)
+        
         self.name = self.__class__.__name__ if name is NoDefault else name
-        self.children = []
-        self.args = list(args)
-        self.attrs = kw
-        self.data = None
         
         if prefix is not NoDefault: self.prefix = prefix
         if simple is not NoDefault: self.simple = simple
         if strip is not NoDefault: self.strip = strip
-        if indent is not NoDefault: self.indent = indent
-        
-        super(Tag, self).__init__(*args, **kw)
     
-    def __call__(self, data_=None, strip=NoDefault, *args, **kw):
+    def __call__(self, strip=NoDefault, *args, **kw):
         self = deepcopy(self)
         
-        self.data = data_
         if strip is not NoDefault: self.strip = strip
         self.args.extend(list(args))
         self.attrs.update(kw)
@@ -70,29 +77,40 @@ class Tag(Fragment):
         
         for fragment in k:
             if isinstance(fragment, basestring):
-                self.children.append(escape(fragment))
+                self.data.append(escape(fragment))
                 continue
         
-            self.children.append(fragment)
+            self.data.append(fragment)
         
         return self
     
     def __repr__(self):
-        return "<%s children=%d args=%r attrs=%r>" % (self.name, len(self.children), self.args, self.attrs)
+        return "<%s children=%d args=%r attrs=%r>" % (self.name, len(self.data), self.args, self.attrs)
     
     def __unicode__(self):
         """Return a serialized version of this tree/branch."""
         
-        # TODO: Determine how badly this effects things.
-        ci = getcheckinterval()
-        setcheckinterval(0)
-        
-        value = ''.join(self.render('utf8')).decode('utf8')
-        
-        setcheckinterval(ci)
-        return value
+        return u''.join(self)
     
-    def enter(self):
+    def render(self):
+        buf = u""
+        
+        for chunk in self:
+            if not chunk:
+                yield buf
+                buf = u""
+                continue
+            
+            buf += chunk
+        
+        # Handle the remaining data.
+        if buf:
+            yield buf
+    
+    def __copy__(self):
+        return Tag(self.name, self.prefix, self.simple, self.strip, *self.args, **self.attrs)
+    
+    def __iter__(self):
         if self.strip:
             raise StopIteration()
             
@@ -100,139 +118,47 @@ class Tag(Fragment):
             yield self.prefix
         
         yield u'<' + self.name + u''.join([attr for attr in quoteattrs(self, self.attrs)]) + u'>'
-    
-    def exit(self):
+        
         if self.simple or self.strip:
             raise StopIteration()
-            
-        yield u'</' + self.name + u'>'
-    
-    def render(self, encoding='ascii'):
-        indentation = 0
-        text = False
-        stack = []
-        buf = IO()
         
-        for k, t in self:
-            if k == 'enter':
-                indent = getattr(t, 'indent', True)
-                
-                stack.append(t)
-                if t.strip: continue
-                
-                if text and indent:
-                    buf.write('\n')
-                
-                if indent:
-                    buf.write('    ' * indentation)
-                
-                for element in t.enter():
-                    buf.write(element.encode(encoding))
-                
-                if indent:
-                    buf.write('\n')
-                    indentation += 1
-                
-                text = False
-                continue
-            
-            if k == 'exit':
-                indent = getattr(t, 'indent', True)
-                
-                stack.pop()
-                if t.strip: continue
-                
-                if indent:
-                    indentation -= 1
-                
-                if not t.simple:
-                    if text and indent: buf.write('\n')
-                    if indent: buf.write('    ' * indentation)
-                
-                for element in t.exit():
-                    buf.write(element.encode(encoding))
-                
-                if indent and (not t.simple or t.children): buf.write('\n')
-                text = False
-                continue
-            
-            if k == 'text':
-                indent = getattr(stack[-1], 'indent', True)
-                
-                if not text and indent:
-                    buf.write('    ' * indentation)
-                
-                t = t.encode(encoding)
-                buf.write(t.replace('\n', '\n' + '    ' * indentation) if indent else t)
-                text = True
-            
-            if k == 'flush':
-                yield buf.getvalue()
-                del buf
-                buf = IO()
-        
-        yield buf.getvalue()
-    
-    def __copy__(self):
-        t = Tag(self.name, *self.args, **deepcopy(self.attrs))
-        t.data = self.data
-        t.children = self.children
-        return t
-    
-    def __iter__(self):
-        yield 'enter', self
-        
-        for child in self.children:
+        for child in self.data:
             if inspect.isgenerator(child):
                 for element in child:
-                    if isinstance(element, basestring):
-                        yield 'text', unicode(element)
+                    if isinstance(element, unicode):
+                        yield element
                         continue
                     
                     for chunk in element:
                         yield chunk
-                    
+                
                 continue
             
             if isinstance(child, Fragment):
                 for element in child:
                     yield element
+                
                 continue
             
-            if hasattr(child, '__call__'):
-                value = child(self)
+            if inspect.isroutine(child):
+                value = child()
                 
-                if isinstance(value, basestring):
-                    yield 'text', unicode(value)
+                if isinstance(value, unicode):
+                    yield value
                     continue
                 
-                for element in child(self):
+                for element in value:
                     yield element
                 
                 continue
             
-            yield 'text', unicode(child)
+            yield child
         
-        yield 'exit', self
+        yield u'</' + self.name + u'>'
     
     def clear(self):
-        self.children = list()
+        self.data = []
         super(Tag, self).clear()
     
     def empty(self):
-        self.children = list()
-
-
-class Text(Fragment):
-    def __init__(self, data=None, escape=True, *args, **kw):
-        self.escape = escape
-        
-        super(Text, self).__init__(data, *args, **kw)
-    
-    def __iter__(self):
-        yield 'text', escape(unicode(self.data)) if self.escape else unicode(self.data)
-
-
-class Flush(Fragment):
-    def __iter__(self):
-        yield 'flush', None
+        self.data = []
