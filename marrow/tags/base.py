@@ -86,7 +86,7 @@ class Tag(Fragment):
     def __unicode__(self):
         """Return a serialized version of this tree/branch."""
         
-        return u''.join(self)
+        return u''.join(unicode(i) for i in self)
     
     def render(self):
         buf = u""
