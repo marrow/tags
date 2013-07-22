@@ -30,7 +30,7 @@ def quoteattrs(context, attrs):
         if not isinstance(v, unicode):
             v = unicode(v)
         
-        yield ' '  + a.strip(u'_') + '="'
+        yield ' '  + a.strip(u'_').replace('_', '-') + '="'
         
         for s, r in [(u'&', u"&amp;"), (u">", u"&gt;"), (u"<", u"&lt;"), (u'"', u"&quot;")]:
             try:
