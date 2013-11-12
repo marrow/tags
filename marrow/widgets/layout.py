@@ -16,7 +16,7 @@ class DefinitionListLayout(Layout):
         
         for child in self.children:
             if not isinstance(child, Label):
-                parts.append(tag.dt [ self.label(child.name, for_=child)() ])
+                parts.append(tag.dt [ self.label(unicode(child.name), for_=child)() ])
             
             parts.append(tag.dd [ child(self.data) ])
         
