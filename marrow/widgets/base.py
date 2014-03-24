@@ -46,7 +46,7 @@ class Widget(object):
         local = copy(self) # Thread Safety
         
         if data is not NoDefault:
-            if isinstance(local.data, dict):
+            if isinstance(local.data, dict) and isinstance(data, dict):
                 local.data.update(data)
             
             else:
