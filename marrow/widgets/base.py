@@ -11,6 +11,8 @@ from transforms import BaseTransform, BooleanTransform
 __all__ = ['Widget', 'NestedWidget', 'Form', 'FieldSet', 'Label', 'Layout', 'Input', 'BooleanInput', 'Link']
 
 
+class ValidationError(Exception): pass
+
 
 class Widget(object):
     transform = BaseTransform()
@@ -29,7 +31,13 @@ class Widget(object):
     def value(self):
         value = self.data.get(self.name, self.default)
         return self.transform(value) if self.transform else value
-    
+
+    def validate(self, data):
+        try:
+            self.native(data)
+        except Exception as e:
+            raise ValidationError(self.name, e)
+
     def native(self, data):
         value = data.get(self.name, None)
         
