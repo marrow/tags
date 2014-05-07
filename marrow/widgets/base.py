@@ -68,7 +68,14 @@ class NestedWidget(Widget):
     def __init__(self, name_, title_=None, children=None, *args, **kw):
         self.children = children if children else list()
         super(NestedWidget, self).__init__(name_, title_, *args, **kw)
-    
+
+    def validate(self, data):
+        for child in self.children:
+            try:
+                child.validate(data)
+            except Exception as e:
+                raise ValidationError(e)
+
     def native(self, data):
         result = dict()
         
