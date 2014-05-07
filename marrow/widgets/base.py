@@ -3,6 +3,7 @@
 from copy import copy
 
 from marrow.util.object import NoDefault
+import re
 from marrow.tags import html5 as tag
 
 from transforms import BaseTransform, BooleanTransform
@@ -10,6 +11,8 @@ from transforms import BaseTransform, BooleanTransform
 
 __all__ = ['Widget', 'NestedWidget', 'Form', 'FieldSet', 'Label', 'Layout', 'Input', 'BooleanInput', 'Link']
 
+
+class ValidationError(Exception): pass
 
 
 class Widget(object):
@@ -29,7 +32,13 @@ class Widget(object):
     def value(self):
         value = self.data.get(self.name, self.default)
         return self.transform(value) if self.transform else value
-    
+
+    def validate(self, data):
+        try:
+            self.native(data)
+        except Exception as e:
+            raise ValidationError(self.name, e)
+
     def native(self, data):
         value = data.get(self.name, None)
         
@@ -150,6 +159,17 @@ class Input(Widget):
                 value = self.value,
                 **self.args
             )
+
+    def validate(self, data):
+        super(Input, self).validate(data)
+        value = data.get(self.name, None)
+        if self.args.get('required', False):
+            if not value or isinstance(value, str) and not value.strip():
+                raise ValidationError('{} field is required.'.format(self.name))
+        if self.args.get('pattern', False):
+            pattern = re.compile("(?u)^" + self.args.get('pattern') + "$")
+            if not pattern.match(value):
+                raise ValidationError('{} field is invalid.'.format(self.name))
 
 
 class BooleanInput(Input):
