@@ -6,7 +6,7 @@ from marrow.util.object import NoDefault
 import re
 from marrow.tags import html5 as tag
 
-from transforms import BaseTransform, BooleanTransform
+from transforms import BaseTransform, BooleanTransform, TransformException
 
 
 __all__ = ['Widget', 'NestedWidget', 'Form', 'FieldSet', 'Label', 'Layout', 'Input', 'BooleanInput', 'Link']
@@ -46,6 +46,9 @@ class Widget(object):
             return self.default
         
         return self.transform.native(value) if self.transform else value
+
+    def _get_error_key(self):
+        return self.name
     
     @property
     def template(self):
@@ -76,22 +79,51 @@ class NestedWidget(Widget):
             except Exception as e:
                 raise ValidationError(e)
 
+    def _make_exception(self, valid, invalid, errors):
+        return TransformException('', errors=errors, valid=valid, invalid=invalid)
+
+    def _apply_native(self, widget, data):
+        try:
+            w_result = widget.native(data)
+            if isinstance(w_result, (tuple, list)):
+                w_result = w_result[0]
+            w_errors = {}
+        except TransformException as exc:
+            w_result = exc.valid
+            w_errors = exc
+        except (ValueError, AttributeError, AssertionError) as exc:
+            w_result = {widget.name: data.get(widget.name)}
+            w_errors = TransformException('', valid=w_result, invalid={}, errors={widget._get_error_key(): exc})
+        return w_result, w_errors
+
     def native(self, data):
         result = dict()
+        errors = dict()
         
         for child in self.children:
             if isinstance(child, NestedWidget):
-                result.update(child.native(data)[0])
+                ch_res, ch_err = self._apply_native(child, data)
+                result.update(ch_res)
+                if ch_err:
+                    errors[child._get_error_key()] = ch_err.errors or ch_err
                 continue
-            
-            result[child.name] = child.native(data)
-        
+
+            try:
+                result[child.name] = child.native(data)
+            except TransformException as error:
+                errors[child._get_error_key()] = error.errors or error
+            except (ValueError, AttributeError, AssertionError), error:
+                    errors[child._get_error_key()] = error
+
         remaining = dict()
         
         for i in data:
             if i not in result:
                 remaining[i] = data[i]
-        
+
+        if errors:
+            raise self._make_exception(result, remaining, errors)
+
         return result, remaining
 
 
