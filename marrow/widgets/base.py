@@ -105,7 +105,13 @@ class NestedWidget(Widget):
                 ch_res, ch_err = self._apply_native(child, data)
                 result.update(ch_res)
                 if ch_err:
-                    errors[child._get_error_key()] = ch_err.errors or ch_err
+                    ch_err = ch_err.errors or ch_err
+                    if isinstance(ch_err, dict):
+                        for key in ch_err.keys():
+                            if isinstance(ch_err[key], dict):
+                                inner = ch_err.pop(key)
+                                ch_err.update({'%s.%s' % (key, ikey): val for ikey, val in inner.iteritems()})
+                    errors[child._get_error_key()] = ch_err
                 continue
 
             try:
