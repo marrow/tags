@@ -3,11 +3,10 @@
 import inspect
 
 from copy import deepcopy
-from cgi import escape
 
 from marrow.util.compat import IO
 from marrow.util.object import NoDefault
-from marrow.tags.util import quoteattrs
+from marrow.tags.util import quoteattrs, escape
 
 
 __all__ = ['Fragment', 'Tag', 'Text', 'AutoTag', 'tag']
