@@ -1,6 +1,6 @@
 # Marrow Tags
 
-[![][latestversion]][latestversion_] [![][ghtag]][ghtag_] [![][masterstatus]][masterstatus_] [![][mastercover]][mastercover_] [![][masterreq]][masterreq_] [![][ghwatch]][ghsubscription] [![][ghstar]][ghsubscription]
+[![][latestversion]][latestversion_] [![][ghtag]][ghtag_] [![][masterreq]][masterreq_] [![][ghwatch]][ghsubscription] [![][ghstar]][ghsubscription]
 
 > © 2010-2022 Alice Bevan-McGregor and contributors.
 
@@ -56,7 +56,7 @@ If you add `marrow.tags` to the `install_requires` argument of the call to `setu
 
 ### Development Version
 
-> [![][developstatus]][developstatus_] [![][developcover]][developcover_] [![][ghsince]][ghsince_] [![][ghissues]][ghissues_] [![][ghfork]][ghfork_]
+> [![][developcover]][developcover_] [![][ghsince]][ghsince_] [![][ghissues]][ghissues_] [![][ghfork]][ghfork_]
 
 Development takes place on [GitHub][github] in the [tags][repo] project. Issue tracking, documentation, and downloads are provided there.
 
