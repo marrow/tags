@@ -1,11 +1,31 @@
-*.pyc
-*.pyo
+*.py[co]
+
+# Packaging
 *.egg-info
-*.DS_Store
-*~
-build/
-dist/
-tests/.coverage
+.eggs
+.packaging
+
+# Virtual Environment Pseudo-Chroot
+bin
+lib
+usr
+var
+include
+share
+tmp
+depend
+env
+
+# Unit Test / Coverage Reports
+coverage.xml
 .coverage
-third-party
-.testing-deps
+.cagoule.db
+.cache/
+htmlcov/
+
+# Mac
+.DS_Store
+
+# Completion Integration
+.ropeproject
+.idea
