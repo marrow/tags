@@ -26,7 +26,7 @@ An object-based template and widget library wherein templates are interpreted by
 
 ## Overview
 
-The `marrow.tags` package offers pure-Python HTML (XML, and other) text generation and a library of small reusable widgets.  The following are a list of features:
+The `marrow.tags` package offers highly efficient, customizable pure-Python HTML (XML, and other) text generation, and a library of small reusable "widgets".  The following are a list of features:
 
 * No additional languages to learn: it's all Python.
   * You benefit from Python's opcode generation and caching systems.
@@ -99,7 +99,7 @@ The above code should result in the following XML-ish output:
 </document>
 ```
 
-A shortcut is provided; the `marrow.tags` "module"... isn't, strangely. It's actually `Tag` itself! This permits you to import tags directly from the module. Case is relatively unimportant, so for clarity we'll import these with class-like capitalization for clarity. Other than being shorter, this example is identical to the last:
+A shortcut is provided; the `marrow.tags` "module"... isn't, strangely. It's actually `Tag` itself! This permits you to import tags directly from the "module", which will construct them dynamically at import time. Case is relatively unimportant, so for clarity we'll import these with class-like capitalization. Other than being shorter, this example is identical to the last:
 
 ```python
 from marrow.tags import Document, Element
