@@ -57,6 +57,7 @@ class T:
 		super().__setattr__(name, value)
 	
 	def __repr__(self) -> str:
+		"""Programmers' representation for development time diagnostics."""
 		return f"<tag '{self.localName}' children={len(self)}{' ' if self.attributes else ''}{self.attributeMapping}>"
 	
 	def __len__(self) -> int:
@@ -165,8 +166,6 @@ if __name__ == '__main__':
 	print("---\n")
 
 
-
-
 class TagMeta(type):
 	def __new__(meta, name, bases, attrs):
 		cls = type.__new__(meta, str(name), bases, attrs)
@@ -185,11 +184,6 @@ class TagMeta(type):
 		return Tag(localName)
 
 
-
-
-
-
-
 class Tag(T, metaclass=TagMeta):
 	def __call__(self, **attributes) -> T:
 		"""Produce a new, cloned and mutated instance of this tag incorporating attribute changes."""
@@ -203,6 +197,10 @@ class Tag(T, metaclass=TagMeta):
 	
 	def __getitem__(self, children) -> T:
 		"""Mutate this instance to add these children, returning this instance for chained manipulation."""
+		
+		if name in self._void:
+			raise ValueError("Void elements may not have children.")
+		
 		if isinstance(children, (tuple, list)):
 			self.children.extend(children)
 		else:
