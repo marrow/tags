@@ -25,11 +25,13 @@ class T:
 			'class': 'classList',  # https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
 		}
 	
+	_protect = {'localName', 'children', 'classList', 'attributes'}
+	
 	_inline = {
 			'a', 'abbr', 'acronym', 'audio', 'b', 'bdi', 'bdo', 'big', 'button', 'canvas', 'cite', 'code', 'data',
 			'datalist', 'del', 'dfn', 'em', 'embed', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'label', 'map',
 			'mark', 'meter', 'object', 'output', 'picture', 'progress', 'q', 'ruby', 's', 'samp', 'script', 'select',
-			'slot', 'small', 'span', 'strong', 'sub', 'sup', 'svg', 'textarea', 'time', 'title', 'u', 'tt', 'var',
+			'slot', 'small', 'span', 'strong', 'sub', 'sup', 'svg', 'textarea', 'time', 'u', 'tt', 'var',
 			'wbr'
 		}
 	
@@ -51,7 +53,7 @@ class T:
 	def __setattr__(self, name, value) -> None:
 		"""Automatically register unexpected attribute assignments for rendering."""
 		
-		if name not in self.__annotations__ and name not in self.attributes:
+		if not name.startswith('_') and name not in self._protect and name not in self.attributes:
 			self.attributes[name] = name
 		
 		super().__setattr__(name, value)
@@ -198,7 +200,7 @@ class Tag(T, metaclass=TagMeta):
 	def __getitem__(self, children) -> T:
 		"""Mutate this instance to add these children, returning this instance for chained manipulation."""
 		
-		if name in self._void:
+		if self.localName in self._void:
 			raise ValueError("Void elements may not have children.")
 		
 		if isinstance(children, (tuple, list)):
@@ -212,7 +214,7 @@ class Tag(T, metaclass=TagMeta):
 		buf = ""
 		
 		for chunk in self:
-			if not chunk:
+			if not chunk:  # None, empty string, etc. results in flushing the buffer.
 				yield buf.encode(encoding) if encoding else buf
 				buf = ""
 				continue
@@ -253,7 +255,7 @@ if __name__ == '__main__':
 	
 	feed = Tag.rss[Tag.channel[
 		Tag.title["My awesome RSS feed!"],
-		Tag.link["https://example.com/"],
+		# Tag.link["https://example.com/"],
 		Tag.item["..."]
 	]]
 	
@@ -278,14 +280,10 @@ class _Elidable:
 	"""
 	
 	def __str__(self):
-		if not self.classList:
+		if not any(getattr(self, name) for name in self.attributes.values()):
 			return "".join(str(child) for child in self)
 		
-		if __debug__:  # Prettier "linted" output when optimizations aren't enabled.
-			parts.append("\n")
-			parts.append(indent("".join(str(child) for child in self), "\t"))
-		else:
-			parts.extend(str(child) for child in self)
+		return super().__str__()
 
 
 # HTML5 Specialization
