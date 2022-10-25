@@ -8,8 +8,6 @@ from textwrap import indent
 from typing import Any, Dict, Iterable, List, Optional, Set, Type, TypeVar, Union
 from xml.sax.saxutils import quoteattr
 
-#from marrow.tags.util import quoteattrs
-
 
 __all__ = ['camel', 'T', 'Fragment', 'Tag', 'Text', 'AutoTag', 'tag']
 
@@ -42,11 +40,10 @@ class T:
 		if name in self._void and children:
 			raise ValueError("Void elements may not have children.")
 		
+		self.localName = name
 		self.children = children or []  # Populate empty defaults.
 		self.classList = set()
-		self.attributes = {'class': 'classList'}
-		
-		self.localName = name
+		self.attributes = self.attributes.copy()  # Individual instances may dynamically add new attributes.
 		
 		for name, value in kw.items():
 			setattr(self, name, value)
@@ -54,11 +51,11 @@ class T:
 	def __repr__(self) -> str:
 		return f"<tag '{self.localName}' children={len(self)}{' ' if self.attributes else ''}{self.attributeMapping}>"
 	
-	def __len__(self):
+	def __len__(self) -> int:
 		"""Our length is that of the number of our child elements."""
 		return len(self.children)
 	
-	def __iter__(self):
+	def __iter__(self) -> Iterable[Union[str, 'T']]:
 		"""Act as if we are our collection of children when iterated."""
 		return iter(self.children)
 	
@@ -115,11 +112,11 @@ class T:
 		#return f'<{self.localName}>'  # HTML5-like self-closing tag.
 		#return f'<{self.localName} />'  # XML-like explicit NULL element.
 	
-	def __len__(self):
+	def __len__(self) -> int:
 		return len(self.children)
 	
 	@property
-	def attributeMapping(self):
+	def attributeMapping(self) -> dict[str, str]:
 		return {k: v for k, v in {name: getattr(self, origin, None) for name, origin in self.attributes.items()}.items() if v}
 	
 	# API-conformant aliases for "localName".
