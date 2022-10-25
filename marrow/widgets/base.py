@@ -1,12 +1,10 @@
-# encoding: utf-8
+import re
 
 from copy import copy
+from html import tag
 
-from marrow.util.object import NoDefault
-import re
-from marrow.tags import html5 as tag
-
-from transforms import BaseTransform, BooleanTransform, TransformException
+from ..tags.util import NoDefault
+from .transforms import BaseTransform, BooleanTransform, TransformException
 
 
 __all__ = ['Widget', 'NestedWidget', 'Form', 'FieldSet', 'Label', 'Layout', 'Input', 'BooleanInput', 'Link']
@@ -15,7 +13,6 @@ __all__ = ['Widget', 'NestedWidget', 'Form', 'FieldSet', 'Label', 'Layout', 'Inp
 class ValidationError(Exception): pass
 
 
-class Widget(object):
     transform = BaseTransform()
     default = None
     
@@ -65,6 +62,7 @@ class Widget(object):
                 local.data = data
         
         return local.template
+class Widget:
 
 
 class NestedWidget(Widget):
