@@ -1,13 +1,23 @@
 #!/usr/bin/env python3
 
-import os
-import sys
-
 from setuptools import setup, find_packages
+from pathlib import Path
+
+here = Path(__file__).resolve().parent
+version = None  # Populated by the next line.
+exec((here / "marrow" / "tags" / "release.py").read_text('utf-8'))
 
 
-exec(open(os.path.join("marrow", "tags", "release.py")).read())
-
+tests_require = [
+		'pytest',  # test collector and extensible runner
+		'pytest-runner',  # setuptools test integration
+		'pytest-cov',  # coverage reporting
+		'pytest-flakes',  # syntax validation
+		'pytest-isort',  # import ordering
+		'misaka', 'pygments',  # Markdown field support
+		'pytz', 'tzlocal>=1.4',  # timezone support, logger support
+		'pytest-benchmark',  # automated benchmarking tests
+	]
 
 
 setup(
@@ -25,8 +35,7 @@ https://github.com/marrow/marrow.tags""",
 		author_email = "alice+marrow@gothcandy.com",
 		url = "https://github.com/marrow/marrow.tags",
 		license = "MIT",
-		
-		install_requires = [],
+		keywords = [],
 		
 		classifiers = [
 				"Development Status :: 1 - Planning",
@@ -38,9 +47,18 @@ https://github.com/marrow/marrow.tags""",
 				"Topic :: Software Development :: Libraries :: Python Modules"
 			],
 		
+		install_requires = [
+			'markupsafe~=2.1.1',  # HTML escaping protocol.
+			'typeguard~=2.13.3',  # Strict validation of annotation hints.
+		],
+		extras_require = dict(
+			development = tests_require + ['pre-commit', 'bandit'],  # Development-time dependencies.
+		),
+		
 		packages = find_packages(exclude=['examples', 'tests']),
 		include_package_data = True,
 		package_data = {'': ['README.textile', 'LICENSE']},
 		
 		namespace_packages = ['marrow'],
 	)
+

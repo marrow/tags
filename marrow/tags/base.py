@@ -158,34 +158,8 @@ class TagMeta(type):
 		return Tag(localName)
 
 
-class Tag(T, metaclass=TagMeta):
-	def __call__(self, **attributes) -> T:
-		"""Produce a new, cloned and mutated instance of this tag incorporating attribute changes."""
-		instance = self.__class__(self.localName, self.children)  # Mutant pools children!
-		instance.__dict__ = self.__dict__.copy()  # It pools all mutable attributes!
-		
-		for name, value in attributes.items():
-			setattr(instance, name, value)
-		
-		return instance
-	
-	def __getitem__(self, children) -> T:
-		"""Mutate this instance to add these children, returning this instance for chained manipulation."""
-		
-		if isinstance(children, (tuple, list)):
-			self.children.extend(children)
-		elif children is not None:
-			self.children.append(children)
-		
-		return self
 
 
-if __name__ == '__main__':
-	print(repr(Tag))
-	print(repr(Tag.title))
-	print(Tag.title)
-	print(Tag.fileUpload)
-	print("---\n")
 
 
 
@@ -208,17 +182,35 @@ class Tag(T, metaclass=TagMeta):
 			self.children.append(children)
 		
 		return self
-
+	
+	def render(self, encoding=None):
+		buf = ""
+		
+		for chunk in self:
+			if not chunk:
+				yield buf.encode(encoding) if encoding else buf
+				buf = ""
+				continue
+			
+			buf += str(chunk)
+		
+		# Handle the remaining data.
+		if buf:
+			yield buf.encode(encoding) if encoding else buf
 
 
 if __name__ == '__main__':
+	print(repr(Tag))
+	print(repr(Tag.title))
+	print(Tag.title)
+	print(Tag.fileUpload)
+	print("---\n")
+	
 	bdole = Tag.p(classList={'name'})["Bob Dole"]
 	print(bdole, bdole.__dict__, "", sep="\n")
 	print(Tag.p(classList={'fancy', 'wau'})["Much content, super elide."])
 	print("---\n")
-
-
-if __name__ == '__main__':
+	
 	page = Tag.html [
 			Tag.head [
 				Tag.title ["Welcome"]
@@ -229,9 +221,7 @@ if __name__ == '__main__':
 		]
 	
 	print(repr(page), page, sep="\n\n")
-
-
-if __name__ == '__main__':
+	
 	feed = Tag.rss[Tag.channel[
 		Tag.title["My awesome RSS feed!"],
 		Tag.link["https://example.com/"],
@@ -239,7 +229,6 @@ if __name__ == '__main__':
 	]]
 	
 	print(feed)
-
 
 
 # Traits
