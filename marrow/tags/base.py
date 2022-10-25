@@ -288,6 +288,7 @@ class _Elidable:
 			parts.extend(str(child) for child in self)
 
 
+# HTML5 Specialization
 
 class Html(_Prefixed, _Elidable, Tag):
     prefix = "<!DOCTYPE html>"
