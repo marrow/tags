@@ -18,7 +18,7 @@ camel.pattern = re('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)')
 
 
 class T:
-	children: List
+	children: List[Union['T', str]]
 	classList: Set[str]
 	localName: str
 	attributes: dict
