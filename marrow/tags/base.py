@@ -31,7 +31,29 @@ class T:
 			'wbr'
 		}
 	
+	_void = {
+			'area',
+			'base',
+			'br',
+			'col',
+			'embed',
+			'hr',
+			'iframe',
+			'img',
+			'input',
+			'link',
+			'meta',
+			'param',
+			'portal',
+			'source',
+			'track',
+			'wbr'
+		}
+	
 	def __init__(self, name:str, children:Optional[List]=None, **kw) -> None:
+		if name in self._void and children:
+			raise ValueError("Void elements may not have children.")
+		
 		self.children = children or []  # Populate empty defaults.
 		self.classList = set()
 		self.attributes = {'class': 'classList'}
@@ -94,7 +116,9 @@ class T:
 				parts.append("\n")
 			else:
 				parts.extend(str(child) for child in self)
-		parts.extend(('</', self.localName, '>\n' if __debug__ and block else '>'))
+		
+		if self.localName not in self._void:
+			parts.extend(('</', self.localName, '>\n' if __debug__ and block else '>'))
 		
 		return ''.join(parts)
 		
