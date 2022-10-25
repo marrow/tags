@@ -18,10 +18,14 @@ camel.pattern = re('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)')
 
 
 class T:
-	children: List[Union['T', str]]
-	classList: Set[str]
-	localName: str
-	attributes: dict
+	"""The base class encapsulating fundamental tag-based text markup operation."""
+	
+	localName: Optional[str] = None  # https://developer.mozilla.org/en-US/docs/Web/API/Element/localName
+	children: List[Union['T', str]]  # https://developer.mozilla.org/en-US/docs/Web/API/Element/children
+	classList: Set[str]  # https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
+	attributes: dict[str, str] = {  # https://developer.mozilla.org/en-US/docs/Web/API/Element/attributes
+			'class': 'classList',  # https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
+		}
 	
 	_inline = {
 			'a', 'abbr', 'acronym', 'audio', 'b', 'bdi', 'bdo', 'big', 'button', 'canvas', 'cite', 'code', 'data',
