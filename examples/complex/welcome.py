@@ -1,9 +1,7 @@
-#!/usr/bin/env python
-# encoding: utf-8
+#!/usr/bin/env python3
 
-from __future__ import unicode_literals
-
-from marrow.tags.html5 import *
+import marrow.tags
+from html.tag import html, head, title, body, p
 
 from master import SITE_NAME, site_header, site_footer
 
@@ -11,7 +9,6 @@ from master import SITE_NAME, site_header, site_footer
 def welcome():
     return html [
             head [ title [ 'Welcome!', ' — ', SITE_NAME ] ],
-            flush, # allow the browser to start downloading static resources early
             body ( class_ = "nav-welcome" ) [
                     site_header(),
                     p [
@@ -23,6 +20,6 @@ def welcome():
 
 
 if __name__ == '__main__':
-    with open('welcome.html', 'w') as fh:
+    with open('welcome.html', 'wb') as fh:
         for i in welcome().render('utf8'):
             fh.write(i)

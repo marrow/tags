@@ -1,11 +1,11 @@
-# encoding: utf-8
+from datetime import datetime
 
-from __future__ import unicode_literals
+import marrow.tags
 
-from marrow.tags.html5 import *
+from html.tag import div, header, hgroup, h1, h2, aside, footer, p
+
 from widgets import search
 
-from datetime import datetime
 
 
 SITE_NAME = "Contentment, the WebCore CMS"
@@ -20,7 +20,6 @@ def site_header():
                         ],
                     aside ( class_ = "fr" ) [ search() ]
                 ],
-            flush
         ]
 
 
