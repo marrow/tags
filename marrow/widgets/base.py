@@ -3,7 +3,7 @@ import re
 from copy import copy
 from html import tag
 
-from ..tags.util import NoDefault
+from ..tags.util import Sentinel
 from .transforms import BaseTransform, BooleanTransform, TransformException
 
 
@@ -17,14 +17,14 @@ class Widget:
 	transform = BaseTransform()
 	default = None
 	
-	def __init__(self, name_, title_=None, transform=NoDefault, default=NoDefault, data_=NoDefault, **kw):
+	def __init__(self, name_, title_=None, transform=Sentinel, default=Sentinel, data_=Sentinel, **kw):
 		self.name = name_
 		self.title = title_
-		self.data = dict() if data_ is NoDefault else data_
+		self.data = dict() if data_ is Sentinel else data_
 		self.args = kw
 		
-		if transform is not NoDefault: self.transform = transform
-		if default is not NoDefault: self.default = default
+		if transform is not Sentinel: self.transform = transform
+		if default is not Sentinel: self.default = default
 	
 	@property
 	def value(self):
@@ -52,10 +52,10 @@ class Widget:
 	def template(self):
 		raise NotImplementedError
 	
-	def __call__(self, data=NoDefault):
+	def __call__(self, data=Sentinel):
 		local = copy(self) # Thread Safety
 		
-		if data is not NoDefault:
+		if data is not Sentinel:
 			if isinstance(local.data, dict) and isinstance(data, dict):
 				local.data.update(data)
 			

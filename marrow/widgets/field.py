@@ -1,9 +1,7 @@
-# encoding: utf-8
+from html import tag
 
-from marrow.tags import html5 as tag
-from marrow.widgets import transforms as t
-
-from marrow.widgets.base import Input, BooleanInput
+from . import transforms as t
+from .base import Input, BooleanInput
 
 
 __all__ = ['TextField', 'HiddenField', 'SearchField', 'URLField', 'PhoneField', 'EmailField', 'PasswordField', 'DateTimeField', 'DateField', 'MonthField', 'WeekField', 'TimeField', 'DateTimeLocalField', 'NumberField', 'FloatField', 'RangeField', 'FloatRangeField', 'ColorField', 'FileField', 'RadioField', 'CheckboxField', 'TextArea', 'SelectField']

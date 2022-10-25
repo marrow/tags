@@ -1,10 +1,7 @@
-# encoding: utf-8
-
-from __future__ import unicode_literals
-
 from timeit import Timer
 
-from marrow.tags import html5 as tag
+import marrow.tags
+from html import tag
 
 from marrow.widgets import *
 

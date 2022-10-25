@@ -1,8 +1,6 @@
-# encoding: utf-8
+from html import tag
 
-from marrow.tags import html5 as tag
-
-from marrow.widgets.base import Layout, Widget, Label
+from .base import Layout, Widget, Label
 
 
 __all__ = ['DefinitionListLayout', 'TableLayout', 'SubmitFooter']

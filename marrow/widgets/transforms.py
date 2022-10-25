@@ -7,17 +7,12 @@ from collections import defaultdict
 # TODO - eliminate the need for pytz
 # from pytz import utc
 
-from marrow.util.convert import KeywordProcessor
+# from marrow.util.convert import KeywordProcessor
 
 
-__all__ = ['TransformException', 'Transform', 'BaseTransform', 'ListTransform', 'TagsTransform', 'IntegerTransform',
-           'FloatTransform', 'DateTimeTransform']
-
-
-if sys.version_info > (3, 0):
-    txt_type = str
-else:
-    txt_type = unicode
+__all__ = ['TransformException', 'Transform', 'BaseTransform',
+		# 'ListTransform', 'TagsTransform',
+		'IntegerTransform', 'FloatTransform', 'DateTimeTransform']
 
 
 class TransformException(Exception):
@@ -44,7 +39,7 @@ class TransformException(Exception):
         self.message = message
 
     def __str__(self):
-        return txt_type(self.message)
+        return str(self.message)
 
     def __repr__(self):
         return '%s(%s,)' % (self.__class__.__name__, self.message)
@@ -84,7 +79,7 @@ class TransformException(Exception):
             elif isinstance(source, TransformException) and source.errors:
                 return build_dict(source.errors)
             else:
-                return unicode(source)
+                return str(source)
             return errors_dict
         if not self.errors:
             return {}
@@ -132,7 +127,7 @@ class BaseTransform(Transform):
         if value is None: return u''
         
         try:
-            return unicode(value)
+            return str(value)
         
         except:
             raise TransformException()
@@ -146,6 +141,7 @@ class BaseTransform(Transform):
         return value
 
 
+'''
 class ListTransform(BaseTransform):
     processor = KeywordProcessor(', \t\n', normalize=lambda s: s.strip('"'))
     
@@ -158,7 +154,7 @@ class ListTransform(BaseTransform):
         if not isinstance(value, list):
             raise TransformException()
         
-        return unicode(self.processor(value))
+        return str(self.processor(value))
     
     def native(self, value):
         value = super(ListTransform, self).native(value)
@@ -169,6 +165,7 @@ class ListTransform(BaseTransform):
 
 class TagsTransform(ListTransform):
     processor = KeywordProcessor(' \t,', normalize=lambda s: s.lower().strip('"'), sort=True, result=list)
+'''
 
 
 class BooleanTransform(Transform):
@@ -185,7 +182,7 @@ class IntegerTransform(Transform):
     def __call__(self, value):
         if value is None: return u''
         
-        return unicode(value)
+        return str(value)
     
     def native(self, value):
         value = value.strip()
@@ -198,7 +195,7 @@ class FloatTransform(Transform):
     def __call__(self, value):
         if value is None: return u''
         
-        return unicode(value)
+        return str(value)
     
     def native(self, value):
         value = value.strip()
@@ -214,7 +211,7 @@ class DateTimeTransform(Transform):
     def __call__(self, value):
         if value is None: return u''
         
-        return unicode(value.strftime(self.format))
+        return str(value.strftime(self.format))
     
     def native(self, value):
         value = value.strip()
