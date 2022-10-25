@@ -48,6 +48,14 @@ class T:
 		for name, value in kw.items():
 			setattr(self, name, value)
 	
+	def __setattr__(self, name, value) -> None:
+		"""Automatically register unexpected attribute assignments for rendering."""
+		
+		if name not in self.__annotations__ and name not in self.attributes:
+			self.attributes[name] = name
+		
+		super().__setattr__(name, value)
+	
 	def __repr__(self) -> str:
 		return f"<tag '{self.localName}' children={len(self)}{' ' if self.attributes else ''}{self.attributeMapping}>"
 	
@@ -71,12 +79,7 @@ class T:
 			if not value and (value is False or value != 0):
 				continue
 			
-			name = str(key).rstrip('_').replace('__', ':').replace('_', '-')
-			
-			# Add spacer if needed.
-			if len(parts) == 2:
-				parts.append(' ')
-			
+			name = '-'.join(camel(str(key).rstrip('_').replace('__', ':').replace('_', '-')))
 			if value is True:  # For explicitly True values, don't emit a value for the attribute.
 				parts.append(name)
 				continue
@@ -89,7 +92,7 @@ class T:
 			if " " not in value:
 				value = value.strip('"')
 			
-			parts.extend((name, "=", value))
+			parts.extend((" ", name, "=", value))
 		
 		parts.append('>')
 		
