@@ -123,6 +123,20 @@ class T:
 	tagName = \
 	nodeName = \
 		property(lambda self: self.localName)
+	
+	# https://developer.mozilla.org/en-US/docs/Web/API/Element/className
+	
+	@property
+	def className(self) -> str:
+		return ' '.join(self.classList)
+	
+	@className.setter
+	def className(self, value:str):
+		self.classList = set(i.strip() for i in value.split())
+	
+	@className.deleter
+	def className(self):
+		self.classList = set()
 
 
 
@@ -207,6 +221,10 @@ class Tag(T, metaclass=TagMeta):
 		# Handle the remaining data.
 		if buf:
 			yield buf.encode(encoding) if encoding else buf
+	
+	@property
+	def childElementCount(self):  # https://developer.mozilla.org/en-US/docs/Web/API/Element/childElementCount
+		return len(self)
 
 
 if __name__ == '__main__':
