@@ -69,11 +69,11 @@ class T:
 			# Add spacer if needed.
 			if len(parts) == 2:
 				parts.append(' ')
-
+			
 			if value is True:  # For explicitly True values, don't emit a value for the attribute.
 				parts.append(name)
 				continue
-
+			
 			# Non-string iterables (such as lists, sets, tuples, etc.) are treated as space-separated strings.
 			if isinstance(value, Iterable) and not isinstance(value, str):
 				value = " ".join(str(i) for i in value)
@@ -83,8 +83,9 @@ class T:
 				value = value.strip('"')
 			
 			parts.extend((name, "=", value))
-
+		
 		parts.append('>')
+		
 		if self.children:
 			if __debug__ and block:
 				# Prettier "linted" output when optimizations aren't enabled.
@@ -98,9 +99,9 @@ class T:
 		return ''.join(parts)
 		
 		# Three different possible "null" / "empty" scenarios.
-		return f'<{self.localName}></{self.localName}>' + "\n" if __debug__ else ""  # Missing contents.
-		return f'<{self.localName} />'  # XML-like explicit NULL element.
-		return f'<{self.localName}>'  # HTML5-like self-closing tag.
+		#return f'<{self.localName}></{self.localName}>' + "\n" if __debug__ else ""  # Missing contents.
+		#return f'<{self.localName}>'  # HTML5-like self-closing tag.
+		#return f'<{self.localName} />'  # XML-like explicit NULL element.
 	
 	def __len__(self):
 		return len(self.children)
