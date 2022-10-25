@@ -81,7 +81,7 @@ class T:
 			
 			name = '-'.join(camel(str(key).rstrip('_').replace('__', ':').replace('_', '-')))
 			if value is True:  # For explicitly True values, don't emit a value for the attribute.
-				parts.append(name)
+				parts.extend((" ", name))
 				continue
 			
 			# Non-string iterables (such as lists, sets, tuples, etc.) are treated as space-separated strings.
