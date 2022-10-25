@@ -35,24 +35,8 @@ class T:
 			'wbr'
 		}
 	
-	_void = {
-			'area',
-			'base',
-			'br',
-			'col',
-			'embed',
-			'hr',
-			'iframe',
-			'img',
-			'input',
-			'link',
-			'meta',
-			'param',
-			'portal',
-			'source',
-			'track',
-			'wbr'
-		}
+	_void = {'area', 'base', 'br', 'col', 'embed', 'hr', 'iframe', 'img', 'input', 'link', 'meta', 'param', 'portal',
+			'source', 'track', 'wbr'}
 	
 	def __init__(self, name:str, children:Optional[List]=None, **kw) -> None:
 		if name in self._void and children:
