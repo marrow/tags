@@ -118,7 +118,7 @@ class NestedWidget(Widget):
                 result[child.name] = child.native(data)
             except TransformException as error:
                 errors[child._get_error_key()] = error.errors or error
-            except (ValueError, AttributeError, AssertionError), error:
+            except (ValueError, AttributeError, AssertionError) as error:
                     errors[child._get_error_key()] = error
 
         remaining = dict()
