@@ -1,15 +1,14 @@
-# encoding: utf-8
+import re
 
 from copy import copy
 
-from marrow.util.object import NoDefault
-import re
-from marrow.tags import html5 as tag
-
-from transforms import BaseTransform, BooleanTransform, TransformException
+from ..tags import html5 as tag
+from .transforms import BaseTransform, BooleanTransform, TransformException
 
 
 __all__ = ['Widget', 'NestedWidget', 'Form', 'FieldSet', 'Label', 'Layout', 'Input', 'BooleanInput', 'Link']
+
+NoDefault = object()
 
 
 class ValidationError(Exception): pass
