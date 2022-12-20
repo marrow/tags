@@ -71,7 +71,7 @@ class Tag(Fragment):
 			k = (k, )
 		
 		for fragment in k:
-			if isinstance(fragment, basestring):
+			if isinstance(fragment, str):
 				self.data.append(escape(fragment))
 				continue
 			
@@ -86,6 +86,8 @@ class Tag(Fragment):
 		"""Return a serialized version of this tree/branch."""
 		
 		return u''.join(unicode(i) for i in self)
+	
+	__str__ = __unicode__
 	
 	def render(self):
 		buf = u""
