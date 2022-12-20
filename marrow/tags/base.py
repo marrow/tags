@@ -85,7 +85,7 @@ class Tag(Fragment):
 	def __unicode__(self):
 		"""Return a serialized version of this tree/branch."""
 		
-		return u''.join(unicode(i) for i in self)
+		return u''.join(str(i) for i in self)
 	
 	__str__ = __unicode__
 	
@@ -120,7 +120,7 @@ class Tag(Fragment):
 		for child in self.data:
 			if inspect.isgenerator(child):
 				for element in child:
-					if isinstance(element, unicode):
+					if isinstance(element, str):
 						yield element
 						continue
 					
@@ -138,7 +138,7 @@ class Tag(Fragment):
 			if inspect.isroutine(child):
 				value = child()
 				
-				if isinstance(value, unicode):
+				if isinstance(value, str):
 					yield value
 					continue
 				
