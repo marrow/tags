@@ -27,8 +27,8 @@ def quoteattrs(context, attrs):
 			
 			continue
 		
-		if not isinstance(v, unicode):
-			v = unicode(v)
+		if not isinstance(v, str):
+			v = str(v)
 		
 		yield ' '  + a.strip(u'_').replace('_', '-') + '="'
 		
