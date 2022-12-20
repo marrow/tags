@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 import inspect
 
 from copy import deepcopy
@@ -158,3 +156,4 @@ class Tag(Fragment):
 	
 	def empty(self):
 		self.data = []
+

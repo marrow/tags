@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from marrow.util.object import NoDefault
 
 
@@ -48,3 +46,4 @@ def escape(v):
 		v = v.replace(s, r)
 	
 	return v
+
