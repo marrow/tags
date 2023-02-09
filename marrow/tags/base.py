@@ -113,7 +113,7 @@ class Tag(Fragment):
 			yield u'<' + self.name + u''.join([attr for attr in quoteattrs(self, self.attrs)]) + u'>'
 		
 		if self.simple:
-			raise StopIteration()
+			return
 		
 		for child in self.data:
 			if inspect.isgenerator(child):
