@@ -132,7 +132,7 @@ class BaseTransform(Transform):
         if value is None: return u''
         
         try:
-            return unicode(value)
+            return txt_type(value)
         
         except:
             raise TransformException()
