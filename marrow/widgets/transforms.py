@@ -140,7 +140,7 @@ class BaseTransform(Transform):
     def native(self, value):
         if value == '': return None
         
-        if isinstance(value, str):
+        if not isinstance(value, txt_type):
             return value.decode('utf-8')
         
         return value
