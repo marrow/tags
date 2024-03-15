@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from marrow.tags import filters
 from marrow.tags.base import Tag, Flush, Text
 
@@ -43,3 +41,4 @@ for f in filters.__all__:
     __all__.append(f)
 
 del _locals
+

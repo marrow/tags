@@ -79,12 +79,12 @@ class TransformException(Exception):
             if not source:
                 return errors_dict
             if isinstance(source, dict):
-                for field_name, error in source.iteritems():
+                for field_name, error in source.items():
                     errors_dict[field_name] = build_dict(error)
             elif isinstance(source, TransformException) and source.errors:
                 return build_dict(source.errors)
             else:
-                return unicode(source)
+                return txt_type(source)
             return errors_dict
         if not self.errors:
             return {}
@@ -98,15 +98,15 @@ class TransformException(Exception):
                 value = ' '.join([generate_key(k) for k in value])
             if isinstance(value, dict):
                 value = ' '.join(
-                        [generate_key(v, k) for k, v in value.iteritems()])
+                        [generate_key(v, k) for k, v in value.items()])
 
             results = "%s.%s" % (prefix, value) if prefix else value
             return results
 
         error_dict = defaultdict(list)
-        for k, v in self.to_dict().iteritems():
+        for k, v in self.to_dict().items():
             error_dict[generate_key(v)].append(k)
-        return ' '.join(["%s: %s" % (k, v) for k, v in error_dict.iteritems()])
+        return ' '.join(["%s: %s" % (k, v) for k, v in error_dict.items()])
 
 
 class Transform(object):
@@ -132,7 +132,7 @@ class BaseTransform(Transform):
         if value is None: return u''
         
         try:
-            return unicode(value)
+            return txt_type(value)
         
         except:
             raise TransformException()
@@ -140,7 +140,7 @@ class BaseTransform(Transform):
     def native(self, value):
         if value == '': return None
         
-        if isinstance(value, str):
+        if not isinstance(value, txt_type):
             return value.decode('utf-8')
         
         return value
@@ -158,7 +158,7 @@ class ListTransform(BaseTransform):
         if not isinstance(value, list):
             raise TransformException()
         
-        return unicode(self.processor(value))
+        return txt_type(self.processor(value))
     
     def native(self, value):
         value = super(ListTransform, self).native(value)
@@ -185,7 +185,7 @@ class IntegerTransform(Transform):
     def __call__(self, value):
         if value is None: return u''
         
-        return unicode(value)
+        return txt_type(value)
     
     def native(self, value):
         value = value.strip()
@@ -198,7 +198,7 @@ class FloatTransform(Transform):
     def __call__(self, value):
         if value is None: return u''
         
-        return unicode(value)
+        return txt_type(value)
     
     def native(self, value):
         value = value.strip()
@@ -214,7 +214,7 @@ class DateTimeTransform(Transform):
     def __call__(self, value):
         if value is None: return u''
         
-        return unicode(value.strftime(self.format))
+        return txt_type(value.strftime(self.format))
     
     def native(self, value):
         value = value.strip()
